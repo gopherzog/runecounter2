@@ -2,6 +2,7 @@ package main
 
 import (
 	//"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -13,20 +14,11 @@ const Version = "0.1.3"
 type runeinfo map[string]int
 
 func filenameFromArgs(args []string) (error, string) {
-	filename := ""
-	// Check if we have an env variable for the filename
-	maybeFilename := os.Getenv("FILE")
-	if maybeFilename != "" {
-		filename = maybeFilename
-	}
-	nargs := len(args)
-	// if nargs < 2 {
-	// 	return errors.New("Filename not provided"), ""
-	// }
-	if nargs >= 3 {
-		if args[1] == "-f" {
-			filename = args[2]
-		}
+	filename := os.Getenv("FILE")
+	maybePath := flag.String("f", filename, "file to be processed")
+	flag.Parse()
+	if *maybePath != "" {
+		filename = *maybePath
 	}
 	if _, err := os.Stat(filename); err != nil {
 		if os.IsNotExist(err) {
