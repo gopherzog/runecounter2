@@ -1,18 +1,39 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
-const Version = "0.1.1"
+const Version = "0.1.2"
 
 type runeinfo map[string]int
 
+func filenameFromArgs(args []string) (error, string) {
+	nargs := len(args)
+	if nargs < 2 {
+		return errors.New("Filename not provided"), ""
+	}
+	filename := args[1]
+	if _, err := os.Stat(filename); err != nil {
+		if os.IsNotExist(err) {
+			return err, ""
+		}
+	}
+	return nil, filename
+}
+
 func main() {
 	fmt.Printf("runecounter2 %s\n", Version)
-	err, rawtext := readText("proverbs.txt")
+	err, filename := filenameFromArgs(os.Args)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(1)
+	}
+	err, rawtext := readText(filename)
 	if err != nil {
 		problem := fmt.Sprintf("%v", err)
 		panic(problem)
