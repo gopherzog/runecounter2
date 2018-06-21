@@ -47,9 +47,14 @@ func formatMap(info runeinfo) string {
 
 func readText(filename string) (error, string) {
 	dat, err := ioutil.ReadFile(filename)
+	lx := len(dat)
 	proverbs := ""
 	if err == nil {
-		proverbs = string(dat)
+		maxChars := lx
+		if string(dat[lx-1]) == "\n" {
+			maxChars--
+		}
+		proverbs = string(dat[:maxChars])
 	}
 	return err, proverbs
 }
